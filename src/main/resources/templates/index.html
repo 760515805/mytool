@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"></meta>
+ <link rel="stylesheet" href="/layui/css/layui.css" type="text/css"></link>
+ <script src="/layui/layui.js" charset="utf-8"></script>
+<title>工具类网站</title>
+</head>
+<body>
+<div class="layui-tab" lay-filter="mytool">
+  <ul class="layui-tab-title">
+    <li class="layui-this" lay-id="11">PDF转图片</li>
+    <li lay-id="22">图片转PDF</li>
+    <li lay-id="33">PDF转Word</li>
+    <li lay-id="44">Word转PDF</li>
+    <li lay-id="55">后续功能开发中...</li>
+  </ul>
+  <div class="layui-tab-content">
+    <div class="layui-tab-item layui-show"><iframe src="/pdf/pdf2img" width="100%"  height="900px" frameborder="0" scrolling="auto"></iframe></div>
+    <div class="layui-tab-item">开发中...</div>
+    <div class="layui-tab-item">开发中...</div>
+    <div class="layui-tab-item">开发中...</div>
+    <div class="layui-tab-item">开发中...</div>
+  </div>
+</div>
+<script>
+layui.use('element', function(){
+  var $ = layui.jquery
+  ,element = layui.element; //Tab的切换功能，切换事件监听等，需要依赖element模块
+  //Hash地址的定位
+  var layid = location.hash.replace(/^#mytool=/, '');
+  element.tabChange('mytool', layid);
+  element.on('tab(mytool)', function(elem){
+    location.hash = 'mytool='+ $(this).attr('lay-id');
+  });
+});
+
+</script>
+</body>
+</html>
+
