@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -92,15 +93,15 @@ public class PdfUtil {
 	    public static String toPdf(List<File> files, String basicPath) throws Exception {
 	    	FileOutputStream fos = null;
 	    	try {
-	    		String pdfFilePathPrefix = basicPath + File.separator + "img2pdf"+File.separator+DateUtils.getNowTime("yyyyMMdd")+File.separator;  
+	    		String pdfFilePathPrefix = basicPath +File.separator+DateUtils.getNowTime("yyyyMMdd")+ File.separator + "img2pdf"+File.separator;  
 	            if(null==files||files.isEmpty()) return "";
 	    		//取文件中第一个文件取为PDF文件的名字
 	            String pd = files.get(0).getName();
 	            int dot = pd.lastIndexOf('.');  
 	            //文件名称
-	            String imagePDFName = pd.substring(0, dot).trim(); // 获取图片文件名  
+	            String pdfName = pd.substring(0, dot).trim(); // 获取图片文件名  
 	            
-	            String pdfName = imagePDFName+".pdf";
+	            pdfName = pdfName+".pdf";
 	            
 	            String pdfPath = pdfFilePathPrefix+File.separator+pdfName;
 	            LOG.info("PDF地址：" + pdfPath);  
@@ -129,8 +130,8 @@ public class PdfUtil {
 	                        || file1.getName().toLowerCase().endsWith(".gif")
 	                        || file1.getName().toLowerCase().endsWith(".jpeg")
 	                        || file1.getName().toLowerCase().endsWith(".tif")) {
-	                    // System.out.println(file1.getName());
-	                   // imagePath = imageFolderPath +File.separator+ file1.getName();
+	                     System.out.println(file1.getName());
+	                    imagePath = file1.getAbsolutePath();
 	                   // File imgfile = new File(imagePath);
 	                    if(!file1.exists())continue;
 	                    // 读取图片流
@@ -145,7 +146,7 @@ public class PdfUtil {
 	                }
 	            }
 	            // 关闭文档
-	            if(doc!=null)doc.close();
+	            //if(doc!=null)doc.close();
 	            
 	            return pdfPath;
 	        } catch (IOException e) {
@@ -270,7 +271,7 @@ public class PdfUtil {
 	    } 
 	public static void main(String[] args) throws Exception {
 		String aa = "D:/111.pdf";
-		File file = new File(aa);
+		File file = new File("F:/test/temp/20180615/1.jpg","F:/test/temp/20180615/1i8a.jpg");
 //		System.out.println(file.exists());
 //		if(file.exists()){
 		//	System.out.println(toImg(file,"F:/test"));
@@ -278,10 +279,14 @@ public class PdfUtil {
 //			//file.createNewFile();
 //			System.out.println(file.getAbsolutePath());
 //		}
-		pdf2Image(file,"F:/test",296);
-		
+		String aa1[]={"F:/test/temp/20180615/1.jpg","D:/111.pdf"};
+		if(!file.exists())System.out.println("不存在");
+		//pdf2Image(file,"F:/test",296);
+		List<File> list = new ArrayList<File>();
+		list.add(file);
 //		long time1 = System.currentTimeMillis();
-        toPdf("E:/BaiduNetdiskDownload", "D:/222.pdf");
+      //  toPdf(list, "D:/");
+		//changC.MCombineJPG2PDF(aa1,"D:/111.pdf");
 //        long time2 = System.currentTimeMillis();
 //        int time = (int) ((time2 - time1)/1000);
 //        System.out.println("执行了："+time+"秒！");

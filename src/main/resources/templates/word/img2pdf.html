@@ -22,24 +22,37 @@
       <tbody id="demoList"></tbody>
     </table>
   </div>
-  <blockquote class="layui-elem-quote">需要所有图片合并到一个PDF选择开关开,不需要选择关.</blockquote>   
-  <form class="layui-form" action="">
+    <hr class="layui-bg-green"></hr>
+  <button type="button" class="layui-btn" id="testListAction"><i class="layui-icon"></i>开始上传</button>
+  <hr class="layui-bg-green"></hr>
+ <fieldset class="layui-elem-field">
+     <legend>需要所有图片合并到一个PDF.所有图片上传成功方可操作</legend>
+  <div class="layui-field-box">
+ <!--  <form class="layui-form" action="">
   <div class="layui-form-item">
     <label class="layui-form-label">开关-默认关</label>
     <div class="layui-input-block">
       <input name="open" lay-skin="switch" lay-filter="switchTest" lay-text="ON|OFF" type="checkbox"></input>
     </div>
   </div>
-  </form>
-  <button type="button" class="layui-btn" id="testListAction"><i class="layui-icon"></i>开始上传</button>
-  <br/>
+  </form> -->
+      <button id="hebin" class="layui-btn layui-btn-disabled">合并为一个PDF文件</button>
+  </div>
+</fieldset>
+
   <blockquote class="layui-elem-quote">上传成功后请保证把你文件下载了再刷新,否则弄好的文件将丢失,后续我开发出账号登陆来就可以解决这问题了...</blockquote>   
 </div> 
 <script>
+
+
 var num = 0;
 layui.use(['upload','form'], function(){
 	  var $ = layui.jquery,upload = layui.upload;
 	  var form = layui.form,layer = layui.layer
+	  
+	  var hebin=$('#hebin');
+
+	  
 	  //监听指定开关
 	  form.on('switch(switchTest)', function(data){
 		  if(this.checked){
@@ -59,7 +72,7 @@ layui.use(['upload','form'], function(){
 	    ,number :num
 	    ,method:"post"
 	    ,auto: false
-	    ,data:{action:'pdf2img'}
+	    ,data:{action:'img2pdf'}
 	    ,exts: 'jpg|png|jpge'
 	    ,bindAction: '#testListAction'
 	    ,choose: function(obj){   
@@ -103,7 +116,9 @@ layui.use(['upload','form'], function(){
 	      if(res.code == 0){ //上传成功
 	        var tr = demoListView.find('tr#upload-'+ index),tds = tr.children();
 	        tds.eq(2).html('<span style="color: #5FB878;">上传成功</span>');
-	        tds.eq(3).html('<a href="/download?src='+res.src+'" class="layui-btn">下载生成的图片</a>'); //清空操作
+	        tds.eq(3).html('<a href="/download?src='+res.src+'" class="layui-btn">下载生成PDF文件</a>'); //清空操作
+	        hebin.removeClass("layui-btn-disabled");
+	      //  $("#testListAction").addClass("layui-btn-disabled");
 	        return delete this.files[index]; //删除文件队列已经上传成功的文件
 	      }
 	      this.error(index,upload);

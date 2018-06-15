@@ -151,7 +151,7 @@
 					</execution>
 				</executions>
 			</plugin>
-						<!--maven 指定jdk版本 -->
+						<!--maven 指定jdk版本 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -160,7 +160,7 @@
 					<target>1.8</target>
 					<encoding>UTF-8</encoding>
 				</configuration>
-			</plugin>
+			</plugin>-->
 		</plugins>
 	</build>
 	<repositories>

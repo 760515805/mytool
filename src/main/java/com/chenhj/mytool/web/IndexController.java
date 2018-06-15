@@ -32,11 +32,10 @@ public class IndexController {
 	public void downLoad(HttpServletRequest request,HttpServletResponse response){
 			String fileid = request.getParameter("src");
 			LOG.info("redis ID:"+fileid);
-			JSONObject json =(JSONObject) redisUtil.get(fileid);
-			if(StringUtils.isEmpty(json)){
+			String path =(String) redisUtil.get(fileid);
+			if(StringUtils.isEmpty(path)){
 				return;
 			}
-			String path = json.getString("src");
 	        File file = new File(path);
 	        if(file.exists()){ //判断文件父目录是否存在
 	        	String name = file.getName().replaceAll(" ","");

@@ -21,6 +21,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.chenhj.mytool.bean.UploadFileBean;
 import com.chenhj.mytool.config.Constant;
 import com.chenhj.mytool.service.IPdfTaskService;
+import com.chenhj.mytool.util.DateUtils;
 import com.chenhj.mytool.util.PdfUtil;
 import com.chenhj.mytool.util.RedisUtil;
 import com.chenhj.mytool.util.StringUtils;
@@ -51,7 +52,6 @@ public class PdfTaskServiceImpl implements IPdfTaskService{
 	@Resource
 	private RedisUtil redisUtil;
 	
-	JSONObject redisJ =null;
 
 	@Override
 	public String pdf2Img(HttpServletRequest request) {
@@ -70,19 +70,18 @@ public class PdfTaskServiceImpl implements IPdfTaskService{
             if(file.isEmpty()){
             	upload.setCode(FAIL);
             }else{        
-                File dest = new File(path +File.separator+"temp"+File.separator+ fileName);
+                File dest = new File(path +File.separator+"temp"+File.separator+DateUtils.getNowTime("yyyyMMdd")+File.separator+fileName);
                 if(!dest.getParentFile().exists()){ //判断文件父目录是否存在
-                    dest.getParentFile().mkdir();
+                    dest.getParentFile().mkdirs();
                 }
                 file.transferTo(dest);
                 String src = PdfUtil.pdf2Image(dest,path, 296);
                 LOG.info("原始路径:"+src.trim());
                 String redisKey = UUIDUtils.getUUID();
                 
-                redisJ = new JSONObject();
-                redisJ.put("src", src);
+       
                 //把路径保存进Redis中
-				redisUtil.set(redisKey,redisJ);
+				redisUtil.set(redisKey,src);
 				LOG.info("存入成功");
 				LOG.info(redisUtil.get(redisKey)+"");
 				
@@ -105,17 +104,19 @@ public class PdfTaskServiceImpl implements IPdfTaskService{
     	UploadFileBean upload = new UploadFileBean();
     	try {
     		List<MultipartFile> files = ((MultipartHttpServletRequest)request).getFiles("file");
+    		
     		if(files.isEmpty()){
     			upload.setCode(FAIL);
     		}
+    		LOG.info("一共:"+files.size()+"个文件");
         String path = constant.getPdfImgPath();
         List<File> imgFileList = new ArrayList<File>();
         for(MultipartFile file:files){
         	String fileName = file.getOriginalFilename();
             int size = (int) file.getSize();
-            File dest = new File(path +File.separator+"temp"+File.separator+ fileName);
+            File dest = new File(path +File.separator+"temp"+File.separator+DateUtils.getNowTime("yyyyMMdd")+File.separator+fileName);
             if(!dest.getParentFile().exists()){ //判断文件父目录是否存在
-                dest.getParentFile().mkdir();
+                dest.getParentFile().mkdirs();
             }
             file.transferTo(dest);
             imgFileList.add(dest);
@@ -125,10 +126,9 @@ public class PdfTaskServiceImpl implements IPdfTaskService{
                 String src = PdfUtil.toPdf(imgFileList, path);
                 if(!StringUtils.isEmpty(src)){
                 	String redisKey = UUIDUtils.getUUID();
-                    redisJ = new JSONObject();
-                    redisJ.put("src", src);
+         
                     //把路径保存进Redis中
-    				redisUtil.set(redisKey,redisJ);
+    				redisUtil.set(redisKey,src);
     				LOG.info("存入成功");
     				LOG.info(redisUtil.get(redisKey)+"");
                     upload.setSrc(redisKey);
@@ -138,6 +138,7 @@ public class PdfTaskServiceImpl implements IPdfTaskService{
                 }
                         
 		} catch (Exception e) {
+			e.printStackTrace();
 			upload.setCode(FAIL);
 			upload.setMsg(e.getMessage());
 		}
