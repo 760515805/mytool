@@ -13,6 +13,8 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
 		 <fastjson.version>1.2.47</fastjson.version>
+		 <logback>1.2.3</logback>
+		<slf4j>1.7.25</slf4j>
   	</properties>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -39,6 +41,22 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
      </dependency>
+     		<!--日志 -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+
+
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+		</dependency>
 	<dependency>
     	<groupId>com.alibaba</groupId>
     	<artifactId>fastjson</artifactId>
@@ -60,14 +78,95 @@
     	<artifactId>itext</artifactId>
    		 <version>4.2.1</version>
 	</dependency>
+	
+	<dependency>
+		<groupId>commons-io</groupId>
+		<artifactId>commons-io</artifactId>
+		<version>2.6</version>
+	</dependency>
+	
+	<dependency>
+		<groupId>cn.hutool</groupId>
+		<artifactId>hutool-all</artifactId>
+		<version>4.0.7</version>
+	</dependency>
+	
 	</dependencies>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources/mapper</directory>
+				<includes>
+					<include>*.xml</include>
+				</includes>
+				<targetPath>${project.build.directory}/classes/mapper</targetPath>
+				<filtering>false</filtering>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>*.properties</include>
+					<include>*.xml</include>
+					<include>*.tld</include>
+				</includes>
+				<filtering>false</filtering>
+			</resource>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/*.properties</include>
+					<include>**/*.xml</include>
+				</includes>
+				<filtering>false</filtering>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*.properties</include>
+					<include>**/*.xml</include>
+					<include>**/*.json</include>
+					<include>**/static/**</include>
+					<include>**/templates/**</include>
+				</includes>
+				<filtering>false</filtering>
+			</resource>
+		</resources>
+		<defaultGoal>compile</defaultGoal>
+		<sourceDirectory>src</sourceDirectory>
+		<finalName>mytool</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
+				<artifactId>spring-boot-maven-plugin </artifactId>
+				<configuration>
+					<fork>true</fork>
+					<mainClass>com.chenhj.mytool.App</mainClass>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+						<!--maven 指定jdk版本 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
 			</plugin>
 		</plugins>
-</build>
+	</build>
+	<repositories>
+		<repository>
+			<id>spring-milestone</id>
+			<url>http://repo.spring.io/libs-release</url>
+		</repository>
+	</repositories>
 </project>

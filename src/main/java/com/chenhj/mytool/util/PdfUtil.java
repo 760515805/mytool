@@ -13,7 +13,8 @@ import javax.imageio.ImageIO;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -22,6 +23,7 @@ import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfWriter;
 
 public class PdfUtil {
+	private static final Logger LOG = LoggerFactory.getLogger(PdfUtil.class);
 	/**
 	 * @param PdfFilePath  PDF文件
 	 * @param dstImgFolder 图片文件夹
@@ -61,15 +63,16 @@ public class PdfUtil {
 	                    ImageIO.write(image, "png", dstFile);  
 	                }  
 	                //转换完成弄成压缩包
-	                String zipPath = basic+File.separator+"zip";
-	                if (createDirectory(zipPath)) {
-	                	FileOutputStream fos1 = new FileOutputStream(new File(zipPath+ File.separator +imagePDFName+".zip"));
+	                String zipBasicPath = basic+File.separator+"zip";
+	                if (createDirectory(zipBasicPath)) {
+	                	String zipPath = zipBasicPath+ File.separator +imagePDFName+".zip";
+	                	FileOutputStream fos1 = new FileOutputStream(new File(zipPath));
 	                	ZipUtils.toZip(imgFolderPath, fos1,true);
-	                	System.out.println("PDF文档转PNG图片成功！");  
+	                	LOG.info("PDF文档转PNG图片成功！");  
 	                	return zipPath;
 	                }
 	            } else {  
-	                System.out.println("PDF文档转PNG图片失败：" + "创建" + imgFolderPath + "失败");  
+	            	LOG.info("PDF文档转PNG图片失败：" + "创建" + imgFolderPath + "失败");  
 	                return null;
 	            }  
 	        } catch (IOException e) {  
@@ -86,16 +89,30 @@ public class PdfUtil {
 	     * @throws IOException 
 	     * 
 	     */
-	    public static void toPdf(List<File> files, String pdfPath) throws Exception {
-	        try {
-	            // 图片文件夹地址
-	            // String imageFolderPath = "D:/Demo/ceshi/";
-	            // 图片地址
+	    public static String toPdf(List<File> files, String basicPath) throws Exception {
+	    	FileOutputStream fos = null;
+	    	try {
+	    		String pdfFilePathPrefix = basicPath + File.separator + "img2pdf"+File.separator+DateUtils.getNowTime("yyyyMMdd")+File.separator;  
+	            if(null==files||files.isEmpty()) return "";
+	    		//取文件中第一个文件取为PDF文件的名字
+	            String pd = files.get(0).getName();
+	            int dot = pd.lastIndexOf('.');  
+	            //文件名称
+	            String imagePDFName = pd.substring(0, dot).trim(); // 获取图片文件名  
+	            
+	            String pdfName = imagePDFName+".pdf";
+	            
+	            String pdfPath = pdfFilePathPrefix+File.separator+pdfName;
+	            LOG.info("PDF地址：" + pdfPath);  
+	            
+	            File f = new File(pdfPath);
+	            if(!f.getParentFile().exists()){
+	            	f.getParentFile().mkdirs();
+	            }
+	    		// 图片地址
 	            String imagePath = null;
-	            // PDF文件保存地址
-	            // String pdfPath = "D:/Demo/ceshi/hebing.pdf";
 	            // 输入流
-	            FileOutputStream fos = new FileOutputStream(pdfPath);
+	            fos = new FileOutputStream(pdfPath);
 	            // 创建文档
 	            Document doc = new Document(null, 0, 0, 0, 0);
 	            //doc.open();
@@ -105,13 +122,6 @@ public class PdfUtil {
 	            BufferedImage img = null;
 	            // 实例化图片
 	            Image image = null;
-	            // 获取图片文件夹对象
-	           // File file = new File(imageFolderPath);
-	           // if(!file.exists()){
-	            //	System.out.println("不存在");
-	            //	return;
-	            //}
-	           // File[] files = file.listFiles();
 	            // 循环获取图片文件夹内的图片
 	            for (File file1 : files) {
 	                if (file1.getName().toLowerCase().endsWith(".png")
@@ -122,8 +132,7 @@ public class PdfUtil {
 	                    // System.out.println(file1.getName());
 	                   // imagePath = imageFolderPath +File.separator+ file1.getName();
 	                   // File imgfile = new File(imagePath);
-	                    if(!file1.exists())return;
-	                    System.out.println(file1.getName());
+	                    if(!file1.exists())continue;
 	                    // 读取图片流
 	                    img = ImageIO.read(file1);
 	                    // 根据图片大小设置文档大小
@@ -136,14 +145,18 @@ public class PdfUtil {
 	                }
 	            }
 	            // 关闭文档
-	          //  doc.close();
+	            if(doc!=null)doc.close();
+	            
+	            return pdfPath;
 	        } catch (IOException e) {
 	            throw e;
 	        } catch (BadElementException e) {
 	        	throw e;
 	        } catch (DocumentException e) {
 	        	throw e;
-	        }
+	        }finally {
+				if(fos!=null)fos.close();
+			}
 	}
 	 	/**
 	     * 图片转PDF
@@ -176,7 +189,7 @@ public class PdfUtil {
 	            // 获取图片文件夹对象
 	            File file = new File(imageFolderPath);
 	            if(!file.exists()){
-	            	System.out.println("不存在");
+	            	LOG.info(file+"不存在");
 	            	return;
 	            }
 	            File[] files = file.listFiles();
@@ -237,7 +250,7 @@ public class PdfUtil {
         stripper.writeText(doc,writer);
         writer.close();
         doc.close();
-        System.out.println("pdf转换word成功！");
+        LOG.info("pdf转换word成功！");
 	}
 	 private static boolean createFile(String folder) throws IOException {  
 	        File file = new File(folder);  

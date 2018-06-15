@@ -6,27 +6,42 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.alibaba.fastjson.JSONObject;
+import com.chenhj.mytool.util.RedisUtil;
+import com.chenhj.mytool.util.StringUtils;
 @Controller
 @RequestMapping("/")
 public class IndexController {
+	private static final Logger LOG = LoggerFactory.getLogger(IndexController.class);
+	@Resource
+	private RedisUtil redisUtil;
 	@RequestMapping("/") 
 	public String  index() {
 		return "/index";
 	}
 	@RequestMapping(value="/download") 
-	public String downLoad(HttpServletRequest request,HttpServletResponse response){
-	        //String filename="2.jpg";
-	        //String filePath = "F:/test" ;
-			String path = request.getParameter("src");
+	public void downLoad(HttpServletRequest request,HttpServletResponse response){
+			String fileid = request.getParameter("src");
+			LOG.info("redis ID:"+fileid);
+			JSONObject json =(JSONObject) redisUtil.get(fileid);
+			if(StringUtils.isEmpty(json)){
+				return;
+			}
+			String path = json.getString("src");
 	        File file = new File(path);
 	        if(file.exists()){ //判断文件父目录是否存在
+	        	String name = file.getName().replaceAll(" ","");
 	            response.setContentType("application/force-download");
-	            response.setHeader("Content-Disposition", "attachment;fileName=" + file.getName());
+	            response.setHeader("Content-Disposition", "attachment;fileName=" + name);
 	            byte[] buffer = new byte[1024];
 	            FileInputStream fis = null; //文件输入流
 	            BufferedInputStream bis = null;
@@ -43,18 +58,17 @@ public class IndexController {
 	                }
 	                
 	            } catch (Exception e) {
-	                // TODO Auto-generated catch block
+	            	LOG.error(e+"");
 	                e.printStackTrace();
 	            }
-	            System.out.println("----------file download" + file.getName());
+	            LOG.info("----------file download" + file.getName());
 	            try {
 	            	if(bis!=null)bis.close();
 	                if(bis!=null)fis.close();
 	            } catch (IOException e) {
-	                // TODO Auto-generated catch block
+	            	LOG.error(e+"");
 	                e.printStackTrace();
 	            }
 	        }
-	        return null;
 	    }
 }

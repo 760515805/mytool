@@ -44,9 +44,9 @@ public class WebConfiguration {
         FilterRegistrationBean registration = new FilterRegistrationBean();
         registration.setFilter(new MyFilter());
         //过滤掉 /getUser 和/hello 的请求
-        registration.addUrlPatterns("/getUser","/hello");
+//        registration.addUrlPatterns("/getUser","/hello");
         //过滤掉所有请求
-//      registration.addUrlPatterns("/*");
+       registration.addUrlPatterns("/*");
         registration.addInitParameter("paramName", "paramValue");
         registration.setName("MyFilter");
         registration.setOrder(1);

@@ -3,12 +3,12 @@
 <head>
  <meta charset="UTF-8" />
  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"></meta>
- <link rel="stylesheet" href="/layui/css/layui.css" type="text/css"></link>
+ <link rel="stylesheet" href="/layui/css/layui.css" type="text/css"  media="all"></link>
  <script src="/layui/layui.js" charset="utf-8"></script>
 <title>工具类网站</title>
 </head>
 <body>
-<blockquote class="layui-elem-quote">这里是PDF转图片的地方,支持多PDF同时转,但本服务器资源有限,你得等久一点</blockquote>   
+<blockquote class="layui-elem-quote">这里是图片转PDF的地方,支持多图片同时转,但本服务器资源有限,你得等久一点</blockquote>   
 <div class="layui-upload">
   <button type="button" class="layui-btn layui-btn-normal" id="testList">选择文件</button> 
   <div class="layui-upload-list">
@@ -22,12 +22,33 @@
       <tbody id="demoList"></tbody>
     </table>
   </div>
+  <blockquote class="layui-elem-quote">需要所有图片合并到一个PDF选择开关开,不需要选择关.</blockquote>   
+  <form class="layui-form" action="">
+  <div class="layui-form-item">
+    <label class="layui-form-label">开关-默认关</label>
+    <div class="layui-input-block">
+      <input name="open" lay-skin="switch" lay-filter="switchTest" lay-text="ON|OFF" type="checkbox"></input>
+    </div>
+  </div>
+  </form>
   <button type="button" class="layui-btn" id="testListAction"><i class="layui-icon"></i>开始上传</button>
+  <br/>
   <blockquote class="layui-elem-quote">上传成功后请保证把你文件下载了再刷新,否则弄好的文件将丢失,后续我开发出账号登陆来就可以解决这问题了...</blockquote>   
 </div> 
 <script>
-layui.use('upload', function(){
+var num = 0;
+layui.use(['upload','form'], function(){
 	  var $ = layui.jquery,upload = layui.upload;
+	  var form = layui.form,layer = layui.layer
+	  //监听指定开关
+	  form.on('switch(switchTest)', function(data){
+		  if(this.checked){
+			   num = 0;
+		    }else{
+		       num = 1;
+		    }
+	  });
+	  
 	  //多文件列表示例
 	  var demoListView = $('#demoList')
 	  ,uploadListIns = upload.render({
@@ -35,14 +56,13 @@ layui.use('upload', function(){
 	    ,url: '/pdf/multifileUpload'
 	    ,accept: 'file'
 	    ,multiple: true
-	    ,number :1
+	    ,number :num
 	    ,method:"post"
 	    ,auto: false
 	    ,data:{action:'pdf2img'}
-	    ,exts: 'PDF|pdf'
+	    ,exts: 'jpg|png|jpge'
 	    ,bindAction: '#testListAction'
-	    ,
-	    choose: function(obj){   
+	    ,choose: function(obj){   
 	      var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
 	      //读取本地文件
 	      obj.preview(function(index, file, result){
@@ -74,20 +94,14 @@ layui.use('upload', function(){
 	    before:function(obj){
 	        //预读本地文件示例，不支持ie8
 	        obj.preview(function(index, file, result){
-	          	//$('#demo2').append('<img src="'+ result +'" alt="'+ file.name +'" class="layui-upload-img"></img>')
 	          	var tr = demoListView.find('tr#upload-'+index),tds = tr.children();
 		        tds.eq(2).html('<span style="color: #5FB878;">上传中...别动...</span>');
-		        tds.eq(3).html('<a href="" class="layui-btn layui-btn-disabled">文件上传中...</a>'); //清空操作
+		        //tds.eq(3).html('<a href="" class="layui-btn layui-btn-disabled">文件上传中...</a>'); //清空操作
 	        });
-	    	//layer.msg('上传中...'+index);
-	    	//var tr = demoListView.find('tr#upload-'+ index),tds = tr.children();
-		     //   tds.eq(2).html('<span style="color: #5FB878;">上传中...别动...</span>');
-		      //  tds.eq(3).html('<a href="" class="layui-btn layui-btn-disabled">文件上传中...</a>'); //清空操作
 	    }
 	    ,done: function(res, index, upload){
 	      if(res.code == 0){ //上传成功
-	        var tr = demoListView.find('tr#upload-'+ index)
-	        ,tds = tr.children();
+	        var tr = demoListView.find('tr#upload-'+ index),tds = tr.children();
 	        tds.eq(2).html('<span style="color: #5FB878;">上传成功</span>');
 	        tds.eq(3).html('<a href="/download?src='+res.src+'" class="layui-btn">下载生成的图片</a>'); //清空操作
 	        return delete this.files[index]; //删除文件队列已经上传成功的文件
@@ -103,6 +117,8 @@ layui.use('upload', function(){
 	  });
 	  
 	});
+	
+
 	</script>
 </body>
 </html>
