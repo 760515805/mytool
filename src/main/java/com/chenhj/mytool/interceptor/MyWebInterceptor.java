@@ -5,12 +5,16 @@ package com.chenhj.mytool.interceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
+import com.chenhj.mytool.service.impl.PdfTaskServiceImpl;
 
 
 /**
@@ -31,6 +35,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  */
 @Configuration
 public class MyWebInterceptor extends WebMvcConfigurerAdapter {
+	private static final Logger LOG = LoggerFactory.getLogger(MyWebInterceptor.class);
     @Bean   
     public HandlerInterceptor getMyInterceptor(){
         return new MyInterceptor();
@@ -40,7 +45,7 @@ public class MyWebInterceptor extends WebMvcConfigurerAdapter {
     public void addInterceptors(InterceptorRegistry registry) {
         // addPathPatterns 用于添加拦截规则, 这里假设拦截 /url 后面的全部链接
         // excludePathPatterns 用户排除拦截
-        registry.addInterceptor(getMyInterceptor()).addPathPatterns("/api/phone/query");
+        registry.addInterceptor(getMyInterceptor()).addPathPatterns("/admin/");
         super.addInterceptors(registry);
     }
     

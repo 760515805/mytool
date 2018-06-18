@@ -26,7 +26,7 @@ public class IndexController {
 	private RedisUtil redisUtil;
 	@RequestMapping("/") 
 	public String  index() {
-		return "/index";
+		return "index";
 	}
 	@RequestMapping(value="/download") 
 	public void downLoad(HttpServletRequest request,HttpServletResponse response){

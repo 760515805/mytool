@@ -16,7 +16,7 @@
 		 <logback>1.2.3</logback>
 		<slf4j>1.7.25</slf4j>
   	</properties>
-	<parent>
+	<parent>  
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>1.5.9.RELEASE</version>
@@ -27,6 +27,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
+		<dependency>  
+       		<groupId>net.sourceforge.nekohtml</groupId>  
+       		<artifactId>nekohtml</artifactId>  
+		</dependency> 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -90,9 +94,25 @@
 		<artifactId>hutool-all</artifactId>
 		<version>4.0.7</version>
 	</dependency>
-	
+			<!-- 二维码识别与生成工具库 -->
+    <dependency>
+		<groupId>com.google.zxing</groupId>
+		<artifactId>javase</artifactId>
+		<version>3.3.0</version>
+	</dependency>
+			<!--thumbnailator图片处理工具 -->
+	<dependency>
+		<groupId>net.coobird</groupId>
+		<artifactId>thumbnailator</artifactId>
+		<version>0.4.8</version>
+	</dependency>
+			<!-- sigar获取系统信息 -->
+	<dependency>
+		<groupId>org.fusesource</groupId>
+		<artifactId>sigar</artifactId>
+		<version>1.6.4</version>
+	</dependency>
 	</dependencies>
-
 	<build>
 		<resources>
 			<resource>
@@ -133,7 +153,7 @@
 			</resource>
 		</resources>
 		<defaultGoal>compile</defaultGoal>
-		<sourceDirectory>src</sourceDirectory>
+		<sourceDirectory>src/main/java</sourceDirectory>
 		<finalName>mytool</finalName>
 		<plugins>
 			<plugin>
@@ -151,7 +171,7 @@
 					</execution>
 				</executions>
 			</plugin>
-						<!--maven 指定jdk版本 
+						<!--maven 指定jdk版本
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -160,9 +180,10 @@
 					<target>1.8</target>
 					<encoding>UTF-8</encoding>
 				</configuration>
-			</plugin>-->
+			</plugin>--> 
 		</plugins>
 	</build>
+
 	<repositories>
 		<repository>
 			<id>spring-milestone</id>

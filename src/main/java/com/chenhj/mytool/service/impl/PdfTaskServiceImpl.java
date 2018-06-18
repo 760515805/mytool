@@ -108,7 +108,6 @@ public class PdfTaskServiceImpl implements IPdfTaskService{
     		if(files.isEmpty()){
     			upload.setCode(FAIL);
     		}
-    		LOG.info("一共:"+files.size()+"个文件");
         String path = constant.getPdfImgPath();
         List<File> imgFileList = new ArrayList<File>();
         for(MultipartFile file:files){

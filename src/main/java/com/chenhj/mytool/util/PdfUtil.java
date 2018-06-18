@@ -1,5 +1,6 @@
 package com.chenhj.mytool.util;
 
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,12 +17,14 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.itextpdf.text.BadElementException;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.PdfWriter;
+
+import com.lowagie.text.BadElementException;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Image;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.PdfWriter;
+
 
 public class PdfUtil {
 	private static final Logger LOG = LoggerFactory.getLogger(PdfUtil.class);
@@ -100,12 +103,9 @@ public class PdfUtil {
 	            int dot = pd.lastIndexOf('.');  
 	            //文件名称
 	            String pdfName = pd.substring(0, dot).trim(); // 获取图片文件名  
-	            
 	            pdfName = pdfName+".pdf";
-	            
 	            String pdfPath = pdfFilePathPrefix+File.separator+pdfName;
 	            LOG.info("PDF地址：" + pdfPath);  
-	            
 	            File f = new File(pdfPath);
 	            if(!f.getParentFile().exists()){
 	            	f.getParentFile().mkdirs();
@@ -114,15 +114,14 @@ public class PdfUtil {
 	            String imagePath = null;
 	            // 输入流
 	            fos = new FileOutputStream(pdfPath);
-	            // 创建文档
-	            Document doc = new Document(null, 0, 0, 0, 0);
-	            //doc.open();
-	            // 写入PDF文档
+	            // 第一步：创建一个document对象。
+	            Document doc = new Document();
+	            doc.setMargins(0, 0, 0, 0);
+	            // 第二步：
+	            // 创建一个PdfWriter实例，
 	            PdfWriter.getInstance(doc, fos);
-	            // 读取图片流
-	            BufferedImage img = null;
-	            // 实例化图片
-	            Image image = null;
+	         // 第三步：打开文档。
+	            doc.open();
 	            // 循环获取图片文件夹内的图片
 	            for (File file1 : files) {
 	                if (file1.getName().toLowerCase().endsWith(".png")
@@ -132,21 +131,22 @@ public class PdfUtil {
 	                        || file1.getName().toLowerCase().endsWith(".tif")) {
 	                     System.out.println(file1.getName());
 	                    imagePath = file1.getAbsolutePath();
-	                   // File imgfile = new File(imagePath);
 	                    if(!file1.exists())continue;
 	                    // 读取图片流
-	                    img = ImageIO.read(file1);
-	                    // 根据图片大小设置文档大小
-	                    doc.setPageSize(new Rectangle(img.getWidth(),img.getHeight()));
 	                    // 实例化图片
-	                    image = Image.getInstance(imagePath);
+	                    Image image = Image.getInstance(imagePath);
+	    	          //  float scalePercentage = (72 / 300f) * 100.0f;  
+	    	          //  image.scalePercent(scalePercentage, scalePercentage);  
+	    	            image.setAlignment(Image.ALIGN_CENTER);
+	    	            // 根据图片大小设置页面，一定要先设置页面，再newPage（），否则无效
+	                    doc.setPageSize(new Rectangle(image.getWidth(),image.getHeight()));
+	                    doc.newPage();
 	                    // 添加图片到文档
-	                    doc.open();
 	                    doc.add(image);
 	                }
 	            }
 	            // 关闭文档
-	            //if(doc!=null)doc.close();
+	          doc.close();
 	            
 	            return pdfPath;
 	        } catch (IOException e) {
@@ -158,75 +158,6 @@ public class PdfUtil {
 	        }finally {
 				if(fos!=null)fos.close();
 			}
-	}
-	 	/**
-	     * 图片转PDF
-	     * @param imageFolderPath
-	     *            图片文件夹地址
-	     * @param pdfPath
-	     *            PDF文件保存地址
-	     * @throws IOException 
-	     * 
-	     */
-	    public static void toPdf(String imageFolderPath, String pdfPath) throws Exception {
-	        try {
-	            // 图片文件夹地址
-	            // String imageFolderPath = "D:/Demo/ceshi/";
-	            // 图片地址
-	            String imagePath = null;
-	            // PDF文件保存地址
-	            // String pdfPath = "D:/Demo/ceshi/hebing.pdf";
-	            // 输入流
-	            FileOutputStream fos = new FileOutputStream(pdfPath);
-	            // 创建文档
-	            Document doc = new Document(null, 0, 0, 0, 0);
-	            //doc.open();
-	            // 写入PDF文档
-	            PdfWriter.getInstance(doc, fos);
-	            // 读取图片流
-	            BufferedImage img = null;
-	            // 实例化图片
-	            Image image = null;
-	            // 获取图片文件夹对象
-	            File file = new File(imageFolderPath);
-	            if(!file.exists()){
-	            	LOG.info(file+"不存在");
-	            	return;
-	            }
-	            File[] files = file.listFiles();
-	            // 循环获取图片文件夹内的图片
-	            for (File file1 : files) {
-	                if (file1.getName().toLowerCase().endsWith(".png")
-	                        || file1.getName().toLowerCase().endsWith(".jpg")
-	                        || file1.getName().toLowerCase().endsWith(".gif")
-	                        || file1.getName().toLowerCase().endsWith(".jpeg")
-	                        || file1.getName().toLowerCase().endsWith(".tif")) {
-	                    // System.out.println(file1.getName());
-	                    imagePath = imageFolderPath +File.separator+ file1.getName();
-	                    File imgfile = new File(imagePath);
-	                    if(!imgfile.exists())return;
-	                    System.out.println(file1.getName());
-	                    // 读取图片流
-	                    img = ImageIO.read(imgfile);
-	                    // 根据图片大小设置文档大小
-	                    doc.setPageSize(new Rectangle(img.getWidth(), img
-	                            .getHeight()));
-	                    // 实例化图片
-	                    image = Image.getInstance(imagePath);
-	                    // 添加图片到文档
-	                    doc.open();
-	                    doc.add(image);
-	                }
-	            }
-	            // 关闭文档
-	          //  doc.close();
-	        } catch (IOException e) {
-	            throw e;
-	        } catch (BadElementException e) {
-	        	throw e;
-	        } catch (DocumentException e) {
-	        	throw e;
-	        }
 	}
 	public static void pdf2Word(File pdffile,String docpath) throws Exception{
 		PDDocument doc=PDDocument.load(pdffile);
@@ -270,8 +201,9 @@ public class PdfUtil {
 	        }  
 	    } 
 	public static void main(String[] args) throws Exception {
-		String aa = "D:/111.pdf";
-		File file = new File("F:/test/temp/20180615/1.jpg","F:/test/temp/20180615/1i8a.jpg");
+		//String aa = "D:/111.pdf";
+		File file1 = new File("F:/test/temp/20180615/1.jpg");
+		File file2 = new File("F:/test/temp/20180615/1i8a.jpg");
 //		System.out.println(file.exists());
 //		if(file.exists()){
 		//	System.out.println(toImg(file,"F:/test"));
@@ -279,13 +211,20 @@ public class PdfUtil {
 //			//file.createNewFile();
 //			System.out.println(file.getAbsolutePath());
 //		}
+		
 		String aa1[]={"F:/test/temp/20180615/1.jpg","D:/111.pdf"};
-		if(!file.exists())System.out.println("不存在");
+		
+		File file3 = new File("D:/\\20180618\\img2pdf\\\\1.pdf");
+		
+		if(!file1.exists())System.out.println("不存在");
+		if(!file3.exists())System.out.println("不存在");
 		//pdf2Image(file,"F:/test",296);
 		List<File> list = new ArrayList<File>();
-		list.add(file);
+		list.add(file1);
+		list.add(file2);
 //		long time1 = System.currentTimeMillis();
       //  toPdf(list, "D:/");
+		//pdf2Word(file3,);
 		//changC.MCombineJPG2PDF(aa1,"D:/111.pdf");
 //        long time2 = System.currentTimeMillis();
 //        int time = (int) ((time2 - time1)/1000);

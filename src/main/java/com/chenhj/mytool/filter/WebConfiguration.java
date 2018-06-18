@@ -16,12 +16,16 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.chenhj.mytool.config.IpConfig;
+import com.chenhj.mytool.interceptor.MyWebInterceptor;
+import com.chenhj.mytool.util.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -35,6 +39,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @Configuration
 public class WebConfiguration {
+	private static final Logger LOG = LoggerFactory.getLogger(MyWebInterceptor.class);
+
     
 	@Autowired  
     private IpConfig ipconfig; 
@@ -61,7 +67,7 @@ public class WebConfiguration {
 			HttpServletRequest request = (HttpServletRequest) srequest;
 			HttpServletResponse response = (HttpServletResponse) sresponse;
 			//执行过滤操作...
-			System.out.println("请求的url :"+request.getRequestURI());
+			 LOG.info("请求的url :"+request.getRequestURI());
 			//检查是否是白名单的IP
 			if(!checkIP(request,response)){
 				return;
@@ -71,32 +77,34 @@ public class WebConfiguration {
 
 		@Override
 		public void init(FilterConfig filterConfig) throws ServletException {
-			System.out.println("参数初始化:"+filterConfig);
+			 LOG.info("参数初始化:"+filterConfig);
 		}
 		
 		@Override
 		public void destroy() {
-			System.out.println("开始销毁...");
+			 LOG.info("开始销毁...");
 		}
     }
     
      private boolean checkIP(HttpServletRequest request,HttpServletResponse response){
     	  String ip = getIpAddr(request);
+    	  LOG.info("访问IP: " + ip+"!");
           // 获取可以访问系统的白名单
           String ipStr = ipconfig.getIpWhiteList();
+          if(StringUtils.isEmpty(ipStr))return true;
           String[] ipArr = ipStr.split("\\|");
           List<String> ipList = Arrays.asList(ipArr);
           if (ipList.contains(ip)) {
-          	 System.out.println("该IP: " + ip+"通过!");
+        	  LOG.info("该IP: " + ip+"通过!");
               return true;
           } else {
-              System.out.println("该IP: " + ip+"不通过!");
+        	  LOG.info("该IP: " + ip+"不通过!");
           	try {
               response.setCharacterEncoding("UTF-8");
               response.setContentType("application/json; charset=utf-8");
               // 消息
               Map<String, Object> messageMap = new HashMap<>();
-              messageMap.put("status", "1");
+                messageMap.put("status", "1");
               messageMap.put("message", "您好，ip为" + ip + ",暂时没有访问权限，请联系管理员开通访问权限。");
               ObjectMapper objectMapper=new ObjectMapper();
               String writeValueAsString;

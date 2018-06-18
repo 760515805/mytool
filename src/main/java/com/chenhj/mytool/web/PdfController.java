@@ -18,11 +18,11 @@ public class PdfController {
 	
 	@RequestMapping("/pdf2img") 
 	public String  pdf2img() {
-		return "/word/pdf2img";
+		return "word/pdf2img";
 	}
 	@RequestMapping("/img2pdf") 
 	public String  img2pdf() {
-		return "/word/img2pdf";
+		return "word/img2pdf";
 	}
 	/**
      * 实现多文件上传
