@@ -4,15 +4,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/front")
-public class FrontController {
-	@RequestMapping("/json") 
+@RequestMapping("/json")
+public class JSONController {
+	@RequestMapping("/index") 
 	public String  pdf2img() {
 		return "json/index";
-	}
-	@RequestMapping("/js_beautify") 
-	public String  jsbeautify() {
-		System.out.println(111);
-		return "jsdecode/index";
 	}
 }

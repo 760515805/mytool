@@ -14,8 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.alibaba.fastjson.JSONObject;
 import com.chenhj.mytool.util.RedisUtil;
 import com.chenhj.mytool.util.StringUtils;
 @Controller
@@ -27,6 +25,10 @@ public class IndexController {
 	@RequestMapping("/") 
 	public String  index() {
 		return "index";
+	}
+	@RequestMapping("/updatelog") 
+	public String  updateLog() {
+		return "updatelog";
 	}
 	@RequestMapping(value="/download") 
 	public void downLoad(HttpServletRequest request,HttpServletResponse response){

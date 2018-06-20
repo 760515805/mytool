@@ -7,14 +7,25 @@
  <script src="/layui/layui.js" charset="utf-8"></script>
 </head>
 <body>
-<blockquote class="layui-elem-quote">ES条件转换</blockquote>   
+<blockquote class="layui-elem-quote">ES条件转换,注意:目前只支持简单查询,请勿复杂查询,MySQL数据库语句,当前版本V1.0.0.1</blockquote>   
+<blockquote class="layui-elem-quote">例如:select 参数    from  表名   where xxxx</blockquote>   
 <form class="layui-form layui-form-pane" action="">
 
 <div class="layui-form-item layui-form-text">
+    <label class="layui-form-label">请输入相应SQL</label>
+    <div class="layui-input-block">
+      <textarea placeholder="生成条件JSON" class="layui-textarea" readonly="readonly"></textarea>
+    </div>
     <label class="layui-form-label">生成条件JSON</label>
     <div class="layui-input-block">
       <textarea placeholder="生成条件JSON" class="layui-textarea" readonly="readonly"></textarea>
     </div>
+    
+    <div class="layui-input-block">
+      <button class="layui-btn" lay-submit="" lay-filter="demo1">转换</button>
+      <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+  </div>
+    
  </div>
 </form>
 <script>
@@ -24,44 +35,12 @@ layui.use(['form', 'layedit', 'laydate'], function(){
 	  ,layedit = layui.layedit
 	  ,laydate = layui.laydate;
 	  
-	  //日期
-	  laydate.render({
-	    elem: '#date'
-	  });
-	  laydate.render({
-	    elem: '#date1'
-	  });
-	  
-	  //创建一个编辑器
-	  var editIndex = layedit.build('LAY_demo_editor');
-	 
-	  //自定义验证规则
-	  form.verify({
-	    title: function(value){
-	      if(value.length < 5){
-	        return '标题至少得5个字符啊';
-	      }
-	    }
-	    ,pass: [/(.+){6,12}$/, '密码必须6到12位']
-	    ,content: function(value){
-	      layedit.sync(editIndex);
-	    }
-	  });
-	  
-	  //监听指定开关
-	  form.on('switch(switchTest)', function(data){
-	    layer.msg('开关checked：'+ (this.checked ? 'true' : 'false'), {
-	      offset: '6px'
-	    });
-	    layer.tips('温馨提示：请注意开关状态的文字可以随意定义，而不仅仅是ON|OFF', data.othis)
-	  });
-	  
 	  //监听提交
 	  form.on('submit(demo1)', function(data){
-	    layer.alert(JSON.stringify(data.field), {
-	      title: '最终的提交信息'
-	    })
-	    return false;
+	   	  layer.alert(JSON.stringify(data.field), {
+	      	title: '最终的提交信息'
+	    		})
+	      return false;
 	  });
 	 
 	  //表单初始赋值
