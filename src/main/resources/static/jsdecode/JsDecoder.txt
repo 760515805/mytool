@@ -1,0 +1,4 @@
+Changelog:
+* 1.1.0 - fixed parser bugs, formatting improvements, colorizing enabled on ie & opera, tested with YUI, extjs, jsminififer, jslint and itself.
+* 1.0.2 - fixed bugs at parsing google maps js: http://maps.google.com/mapfiles/maps2.63.api.js
+* 1.0.1 - a few bugs fixed
