@@ -26,6 +26,7 @@ import com.alibaba.druid.stat.TableStat.Condition;
 import com.alibaba.druid.stat.TableStat.Name;
 import com.alibaba.druid.util.JdbcConstants;
 import com.alibaba.druid.util.JdbcUtils;
+import com.chenhj.mytool.util.StringUtils;
 public class SqlParserUtil {
 	private  final static Logger logger = LoggerFactory.getLogger(SqlParserUtil.class);
 
@@ -43,39 +44,9 @@ public class SqlParserUtil {
 //                    + "order by bo.f9, f.f10;"
 //                    + "select func(f) from test1; "
 //                    + "";
-    	//String sql = "(select * from bb where aa>0 and bb<1 and cc='123' or dd!=1  group by aa,bb ORDER BY date,aa desc";
-    	String sql = "UPDATE table set aa=1 where aa>0 and bb<1 and cc='123' or dd!=1 ";
-    	//format(sql);
-    	StringBuffer select = new StringBuffer();   
-    	  StringBuffer from = new StringBuffer();   
-    	  StringBuffer where = new StringBuffer();   
-    	    
-    	  // parser得到AST   
-    	  List<SQLStatement> stmtList = SQLUtils.parseStatements(sql, JdbcUtils.MYSQL);
-    	 // 将AST通过visitor输出   
-    	 SQLASTOutputVisitor visitor = SQLUtils.createFormatOutputVisitor(from, stmtList, JdbcUtils.MYSQL);   
-    	 SQLASTOutputVisitor whereVisitor = SQLUtils.createFormatOutputVisitor(where, stmtList, JdbcUtils.MYSQL);   
-    	     
-    	 for (SQLStatement stmt : stmtList) {   
-//    	       stmt.accept(visitor);   
-	    	 if(stmt instanceof SQLSelectStatement){   
-	    		 SQLSelectStatement sstmt = (SQLSelectStatement)stmt;   
-	    		 SQLSelect sqlselect = sstmt.getSelect();   
-	    		 SQLSelectQueryBlock query = (SQLSelectQueryBlock)sqlselect.getQuery();   
-	    		 query.getFrom().accept(visitor);   
-	    		 query.getWhere().accept(whereVisitor);   
-	    	 }else if(stmt instanceof SQLInsertStatement){
-	    		 SQLInsertStatement istmt = (SQLInsertStatement)stmt;
-	    		 //SQLInse
-	    	 }else if(stmt instanceof SQLUpdateStatement){
-	    		 
-	    	 }
-	    	
-    	 }   
-    	    
-    	 System.out.println(from.toString());   
-    	 System.out.println(select);   
-    	 System.out.println(where); 
+    	String sql = "select * from bb where aa>0 and bb<1 and cc='123' or dd!=1  group by aa,bb ORDER BY aa desc";
+    	
+    	 System.out.println(aa); 
  
     }
     /*********表名**********/
@@ -151,14 +122,35 @@ public class SqlParserUtil {
             logger.info("Manipulation : " + visitor.getTables());
             //获取字段名称
             logger.info("fields : " + visitor.getColumns());
-            
-     
-            
+               
         }
-
- 
     }
-
+    public static String[] getWhere(String sql){
+    	StringBuffer where = new StringBuffer();   
+    	  // parser得到AST   
+    	List<SQLStatement> stmtList = SQLUtils.parseStatements(sql, JdbcUtils.MYSQL);
+    	 // 将AST通过visitor输出   
+    	 SQLASTOutputVisitor whereVisitor = SQLUtils.createFormatOutputVisitor(where, stmtList, JdbcUtils.MYSQL);   
+    	 for (SQLStatement stmt : stmtList) {   
+	    	 if(stmt instanceof SQLSelectStatement){   
+	    		 SQLSelectStatement sstmt = (SQLSelectStatement)stmt;   
+	    		 SQLSelect sqlselect = sstmt.getSelect();   
+	    		 SQLSelectQueryBlock query = (SQLSelectQueryBlock)sqlselect.getQuery();  
+	    		 query.getWhere().accept(whereVisitor);   
+	    	 }else if(stmt instanceof SQLInsertStatement){
+	    		 SQLInsertStatement istmt = (SQLInsertStatement)stmt;
+	    		 System.out.println(istmt.getColumns());
+	    	 }else if(stmt instanceof SQLUpdateStatement){
+	    		 SQLUpdateStatement ustmt = (SQLUpdateStatement) stmt;
+	    		 ustmt.getWhere().accept(whereVisitor);
+	    	 }
+    	 }   
+    	if(StringUtils.isNotEmpty(where.toString())){
+    		String aa[] = where.toString().split("\n");
+    		return aa;
+    	}
+    	return null;
+    }
 	public static String getTableName() {
 		return tableName;
 	}
